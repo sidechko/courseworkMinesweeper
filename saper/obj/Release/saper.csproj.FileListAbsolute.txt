@@ -26,10 +26,10 @@ C:\Users\User\Desktop\КУРСАЧ\saper\saper\bin\Release\saper.exe
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\bin\Release\saper.pdb
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\saper.csproj.AssemblyReference.cache
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\saper.FAQ.resources
-C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\saper.Form1.resources
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\saper.Level.resources
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\saper.Properties.Resources.resources
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\saper.csproj.GenerateResource.cache
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\saper.csproj.CoreCompileInputs.cache
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\saper.exe
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\saper.pdb
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\saper.MainForm.resources

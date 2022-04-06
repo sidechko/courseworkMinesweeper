@@ -34,6 +34,8 @@ namespace saper
 
         public int bombCout = DEFAULT_BOMB_COUNT;
         public int size = DEFAULT_SIZE;
+        public int getBombCOunt() { return this.bombCout; }
+        public int getSize() { return this.size; }
 
         public bool faqIsOpen = false;
 
@@ -45,7 +47,7 @@ namespace saper
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void MainFormLoad(object sender, EventArgs e)
         {
             this.Text = "Saper";
             this.Size = new Size(poleSize+37, poleSize+170);
@@ -100,7 +102,6 @@ namespace saper
             };
             menu.Items.Add(faq);
             this.Controls.Add(menu);
-
 
             init();
         }

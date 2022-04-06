@@ -28,7 +28,6 @@ namespace saper
 
         private void Level_Load(object sender, EventArgs e)
         {
-            
             this.Size = new Size(250, 200);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -44,7 +43,7 @@ namespace saper
             };
             size = new TextBox()
             {
-                Text = MainForm.DEFAULT_SIZE.ToString(),
+                Text = owner.getSize().ToString(),
                 Location = new Point(110,31),
                 Size = new Size(100,20)
             };
@@ -59,7 +58,7 @@ namespace saper
             };
             bombCount = new TextBox()
             {
-                Text = MainForm.DEFAULT_BOMB_COUNT.ToString(),
+                Text = owner.getBombCOunt().ToString(),
                 Location = new Point(110,66),
                 Size = new Size(100,20)
             };
