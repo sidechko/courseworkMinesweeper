@@ -12,10 +12,11 @@ using System.Windows.Threading;
 
 namespace saper
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         public const int DEFAULT_SIZE = 20;
         public const int DEFAULT_BOMB_COUNT = 20;
+        private int clickCount = 0;
 
         private Panel pole;
         private int poleSize = 600;
@@ -37,7 +38,9 @@ namespace saper
         public bool faqIsOpen = false;
 
         public Dispatcher current = Dispatcher.CurrentDispatcher;
-        public Form1()
+        Thread timerThread = null;
+        Thread checkerThread = null;
+        public MainForm()
         {
             InitializeComponent();
         }
@@ -120,7 +123,10 @@ namespace saper
 
         public void init()
         {
-            Console.WriteLine("Update");
+            clickCount = 0;
+            if(timerThread!=null)timerThread.Abort();
+            if(checkerThread != null)checkerThread.Abort();
+            timer.Text = "00:00";
             updateThisText();
             finishGame = true;
             emojiImage.Image = imgs.getAlive();
@@ -136,14 +142,12 @@ namespace saper
                     cells[i, j] = new Cell(new int[] { i, j });
                     genCell(i, j, cells[i, j]);
                 }
-            TimeSpan dT = DateTime.Now - startTime;
-            Console.WriteLine(dT.ToString("m:s"));
         }
 
         private void genCell(int x, int y, Cell tag)
         {
             int allSize = poleSize / size;
-            int ost = poleSize % size;
+            int ost = Math.Min(poleSize % size, 2);
             Button b = new Button()
             {
                 BackColor = Color.White,
@@ -152,8 +156,8 @@ namespace saper
                 FlatStyle = FlatStyle.Flat,
                 ForeColor = Color.Gray,
                 Tag = tag,
-                Font = new Font(FontFamily.GenericSansSerif, allSize/2),
-                TextAlign = ContentAlignment.MiddleCenter
+                TextAlign = ContentAlignment.TopCenter,
+                Font = new Font(FontFamily.GenericSansSerif, Math.Max(0, allSize - 11), GraphicsUnit.Pixel)
             };
             b.MouseDown += new MouseEventHandler(click);
             ((Cell)b.Tag).openCell += () => current.Invoke(()=> {
@@ -166,22 +170,25 @@ namespace saper
         private void click(object sender, MouseEventArgs args)
         {
             if (finishGame) return;
-            if (firstClick)
-            {
-                generateBomb();
-                firstClick = false;
-                checker();
-            }
             if (sender is Control control)
-                if (control.Tag is Cell cell) {
+                if (control.Tag is Cell cell)
+                {
+                    if (firstClick)
+                    {
+                        generateBomb(cell.getX(),cell.getY());
+                        firstClick = false;
+                        checker();
+                    }
                     if (args.Button.Equals(MouseButtons.Left))
                     {
                         if (cell.getFlag()) return;
+                        clickCount++;
                         if (!cell.isOpened()) openNear(cell);
                     }
                     else if (args.Button.Equals(MouseButtons.Middle)) {
-                        Console.WriteLine("MID");
-                        if(canDoAcrod(cell))openAcord(cell);
+                        if (!canDoAcrod(cell)) return;
+                        openAcord(cell);
+                        clickCount++;
                     }
                     else{
                         if (cell.isOpened()) return;
@@ -197,7 +204,7 @@ namespace saper
                 }
         }
 
-        private void generateBomb()
+        private void generateBomb(int nX, int nY)
         {
             int count = 0;
             Random rnd = new Random();
@@ -205,6 +212,7 @@ namespace saper
             {
                 int x = rnd.Next(size);
                 int y = rnd.Next(size);
+                if (x == nX && y == nY) continue;
                 if (cells[x, y].isBomb()) continue;
                 cells[x, y].setType('b');
                 for (int i = -1; i < 2; i++)
@@ -229,7 +237,13 @@ namespace saper
             {
                 for (int j = -1; j < 2; j++)
                 {
-                    if(cells[cell.getX() + i, cell.getY() + j].getFlag())flagCountNear--;
+                    try
+                    {
+                        Cell cellToCheck = cells[cell.getX() + i, cell.getY() + j];
+                        if (cellToCheck.getFlag()) flagCountNear--;
+                    }
+                    catch { continue; }
+                    if (flagCountNear == 0) return true;
                 }
             }
             return flagCountNear == 0;
@@ -251,7 +265,11 @@ namespace saper
                             openAllBomb();
                             return;
                         }
-                        if (cellToOpen.isFree()) openNear(cellToOpen);
+                        if (cellToOpen.isFree()) { 
+                            openNear(cellToOpen);
+                            continue;
+                        }
+                        cellToOpen.open();
                     }
                     catch { continue; }
                 }
@@ -262,8 +280,7 @@ namespace saper
         {
             Task task = new Task(() =>
             {
-                try { Cell c = cells[cell.getX() + x, cell.getY() + y]; }
-                catch { return; }
+                if (cell.getX() + x >= size || cell.getY() + y >= size || cell.getX() + x < 0 || cell.getY() + y < 0) return;
                 if (cells[cell.getX() + x, cell.getY() + y].isOpened()) return;
                 if (cells[cell.getX() + x, cell.getY() + y].getFlag()) return;
                 cells[cell.getX() + x, cell.getY() + y].open();
@@ -273,10 +290,14 @@ namespace saper
                     return;
                 }
                 if (cells[cell.getX() + x, cell.getY() + y].isNum()) return;
-                openNear(cells[cell.getX() + x, cell.getY() + y], 1, 0);
-                openNear(cells[cell.getX() + x, cell.getY() + y], -1, 0);
-                openNear(cells[cell.getX() + x, cell.getY() + y], 0, 1);
-                openNear(cells[cell.getX() + x, cell.getY() + y], 0, -1);
+
+                for (int i = -1; i < 2; i++)
+                {
+                    for (int j = -1; j < 2; j++)
+                    {
+                        openNear(cells[cell.getX() + x, cell.getY() + y], i, j);
+                    }
+                }
             });
             task.Start();
         }
@@ -300,7 +321,7 @@ namespace saper
 
         private void checker()
         {
-            Thread checkerThread = new Thread(new ThreadStart(()=> {
+            checkerThread = new Thread(new ThreadStart(()=> {
                 while (!finishGame)
                 {
                     bool allOp = true;
@@ -312,35 +333,27 @@ namespace saper
                     }
                     if (allOp) {
                         finishGame = true;
-                        MessageBox.Show("Вы выиграли!");
+                        TimeSpan dT = DateTime.Now - startTime;
+                        MessageBox.Show(String.Format("Вы смогли открыть поле за {0} клика.\nНа это вам понадобилось {1}m:{2}s:{3}ms", clickCount, dT.Minutes, dT.Seconds, dT.Milliseconds),"Вы выиграли!");
                         Thread.CurrentThread.Abort();
                     }
-                    Thread.Sleep(100);
+                    Thread.Sleep(10);
                 }
                 Thread.CurrentThread.Abort();
             }));
             checkerThread.Start();
 
             
-            Thread timerThread = new Thread(new ThreadStart(() => {
-                int i = 1;
+            timerThread = new Thread(new ThreadStart(() => {
                 startTime = DateTime.Now;
                 while (!finishGame)
                 {
                     Thread.Sleep(1000);
                     TimeSpan dT = DateTime.Now - startTime;
-                    try
-                    {
-                        Console.WriteLine(dT.ToString("m:s"));
-                    }
-                    catch
-                    {
-                        Console.WriteLine("FUCK U");
-                    }
-                    //current.Invoke(()=> { timer.Text = dT.ToString("mm:ss"); });
+                    current.Invoke(()=> { timer.Text = String.Format("{0:00}:{1:00}",dT.Minutes,dT.Seconds); });
                 }
                 Console.WriteLine("Finish");
-                timer.Text = "00:00";
+                current.Invoke(() =>{timer.Text = "00:00"; });
                 Thread.CurrentThread.Abort();
             }));
             timerThread.Start();

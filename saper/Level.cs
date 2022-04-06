@@ -12,8 +12,8 @@ namespace saper
 {
     public partial class Level : Form
     {
-        Form1 owner;
-        public Level(Form1 form1)
+        MainForm owner;
+        public Level(MainForm form1)
         {
             InitializeComponent();
             this.owner = form1;
@@ -29,7 +29,7 @@ namespace saper
         private void Level_Load(object sender, EventArgs e)
         {
             
-            this.Size = new Size(250, 180);
+            this.Size = new Size(250, 200);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -39,13 +39,13 @@ namespace saper
             Label sizeLabel = new Label()
             {
                 Text = "Размеры поля:",
-                Location = new Point(15,15),
+                Location = new Point(15,35),
                 AutoSize = true
             };
             size = new TextBox()
             {
-                Text = Form1.DEFAULT_SIZE.ToString(),
-                Location = new Point(110,11),
+                Text = MainForm.DEFAULT_SIZE.ToString(),
+                Location = new Point(110,31),
                 Size = new Size(100,20)
             };
             this.Controls.Add(sizeLabel);
@@ -54,13 +54,13 @@ namespace saper
             Label bombCountLabel = new Label()
             {
                 Text = "Кол-во бомб:",
-                Location = new Point(15,50),
+                Location = new Point(15,70),
                 AutoSize = true
             };
             bombCount = new TextBox()
             {
-                Text = Form1.DEFAULT_BOMB_COUNT.ToString(),
-                Location = new Point(110,46),
+                Text = MainForm.DEFAULT_BOMB_COUNT.ToString(),
+                Location = new Point(110,66),
                 Size = new Size(100,20)
             };
             this.Controls.Add(bombCountLabel);
@@ -68,7 +68,7 @@ namespace saper
 
             Button save = new Button()
             {
-                Location = new Point(15, 75),
+                Location = new Point(15, 95),
                 Size = new Size(200, 25),
                 Text = "Сохранить изменения"
             };
@@ -77,12 +77,26 @@ namespace saper
 
             Button restart = new Button()
             {
-                Location = new Point(15, 105),
+                Location = new Point(15, 125),
                 Size = new Size(200, 25),
                 Text = "Перезапуск"
             };
             this.Controls.Add(restart);
             restart.Click += new EventHandler(restartData);
+
+            MenuStrip menu = new MenuStrip();
+            ToolStripMenuItem levelsDefault = new ToolStripMenuItem("Стандартная сложность");
+            levelsDefault.DropDownItems.Add(createNewLevel("Простой", 9, 10));
+            levelsDefault.DropDownItems.Add(createNewLevel("Средний", 16, 40));
+            levelsDefault.DropDownItems.Add(createNewLevel("Эксперт", 22, 99));
+            menu.Items.Add(levelsDefault);
+            this.Controls.Add(menu);
+        }
+
+        private ToolStripMenuItem createNewLevel(string name, int size ,int bombCount)
+        {
+            ToolStripMenuItem level = new ToolStripMenuItem(name, null, new EventHandler((e,eargs)=> { this.size.Text=size.ToString(); this.bombCount.Text = bombCount.ToString(); }));
+            return level;
         }
 
         private void restartData(object sender, EventArgs args)
@@ -95,10 +109,10 @@ namespace saper
             int sizeOut;
             int bombCountOut;
             Random rnd = new Random();
-            if (!Int32.TryParse(size.Text, out sizeOut)) sizeOut = Form1.DEFAULT_SIZE;
-            if (!Int32.TryParse(bombCount.Text, out bombCountOut)) bombCountOut = Form1.DEFAULT_BOMB_COUNT;
-            if (sizeOut< 10) sizeOut = 10;
-            if (bombCountOut < 0 || bombCountOut > sizeOut * sizeOut) bombCountOut = rnd.Next(Form1.DEFAULT_BOMB_COUNT, sizeOut * sizeOut / 5);
+            if (!Int32.TryParse(size.Text, out sizeOut)) sizeOut = MainForm.DEFAULT_SIZE;
+            if (!Int32.TryParse(bombCount.Text, out bombCountOut)) bombCountOut = MainForm.DEFAULT_BOMB_COUNT;
+            if (sizeOut < 9) sizeOut = 9;
+            if (bombCountOut < 0 || bombCountOut > sizeOut * sizeOut) bombCountOut = rnd.Next(MainForm.DEFAULT_BOMB_COUNT, sizeOut * sizeOut / 5);
             owner.size = sizeOut;
             owner.bombCout = bombCountOut;
             changeSizeAndBombCount();
