@@ -34,6 +34,7 @@ namespace saper
 
         public void open()
         {
+            if (this.isOpened()) return;
             this.isOpen = true;
             openCell();
         }
@@ -79,6 +80,11 @@ namespace saper
             {
                 this.type = (_a + 1).ToString()[0];
             }
+        }
+
+        public bool isFree()
+        {
+            return this.type == 'n';
         }
 
         public bool isNum()

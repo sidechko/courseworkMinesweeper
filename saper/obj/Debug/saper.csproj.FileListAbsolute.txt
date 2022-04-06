@@ -9,3 +9,15 @@ C:\Users\User\Desktop\edPrSap\saper\saper\obj\Debug\saper.csproj.CoreCompileInpu
 C:\Users\User\Desktop\edPrSap\saper\saper\obj\Debug\saper.exe
 C:\Users\User\Desktop\edPrSap\saper\saper\obj\Debug\saper.pdb
 C:\Users\User\Desktop\edPrSap\saper\saper\obj\Debug\saper.Level.resources
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\bin\Debug\saper.exe.config
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\bin\Debug\saper.exe
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\bin\Debug\saper.pdb
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Debug\saper.csproj.AssemblyReference.cache
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Debug\saper.FAQ.resources
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Debug\saper.Form1.resources
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Debug\saper.Level.resources
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Debug\saper.Properties.Resources.resources
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Debug\saper.csproj.GenerateResource.cache
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Debug\saper.csproj.CoreCompileInputs.cache
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Debug\saper.exe
+C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Debug\saper.pdb

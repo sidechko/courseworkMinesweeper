@@ -28,14 +28,17 @@ namespace saper
 
         private void Level_Load(object sender, EventArgs e)
         {
+            
             this.Size = new Size(250, 180);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
+            this.Text = "Настройки поля";
+
             Label sizeLabel = new Label()
             {
-                Text = "Board Size N:",
+                Text = "Размеры поля:",
                 Location = new Point(15,15),
                 AutoSize = true
             };
@@ -50,7 +53,7 @@ namespace saper
 
             Label bombCountLabel = new Label()
             {
-                Text = "Bomb Count N:",
+                Text = "Кол-во бомб:",
                 Location = new Point(15,50),
                 AutoSize = true
             };
@@ -65,18 +68,18 @@ namespace saper
 
             Button save = new Button()
             {
-                Location = new Point(15, 70),
-                Size = new Size(200, 20),
-                Text = "Save Cheange"
+                Location = new Point(15, 75),
+                Size = new Size(200, 25),
+                Text = "Сохранить изменения"
             };
             this.Controls.Add(save);
             save.Click += new EventHandler(updateData);
 
             Button restart = new Button()
             {
-                Location = new Point(15, 95),
-                Size = new Size(200, 20),
-                Text = "Restart"
+                Location = new Point(15, 105),
+                Size = new Size(200, 25),
+                Text = "Перезапуск"
             };
             this.Controls.Add(restart);
             restart.Click += new EventHandler(restartData);
