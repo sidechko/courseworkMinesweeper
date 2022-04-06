@@ -52,9 +52,9 @@ namespace saper
             this.Text = "Saper";
             this.Size = new Size(poleSize+37, poleSize+170);
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-
 
             pole = new Panel
             {
@@ -65,7 +65,6 @@ namespace saper
                 AutoScrollMargin = new Size(0, 5)
             };
             this.Controls.Add(pole);
-
 
             emojiImage = new PictureBox()
             {
@@ -335,7 +334,9 @@ namespace saper
                     if (allOp) {
                         finishGame = true;
                         TimeSpan dT = DateTime.Now - startTime;
-                        MessageBox.Show(String.Format("Вы смогли открыть поле за {0} клика.\nНа это вам понадобилось {1}m:{2}s:{3}ms", clickCount, dT.Minutes, dT.Seconds, dT.Milliseconds),"Вы выиграли!");
+                        MessageBox.Show(
+                            String.Format("Вы смогли открыть поле за {0} клика." +
+                            "\nНа это вам понадобилось {1}m:{2}s:{3}ms", clickCount, dT.Minutes, dT.Seconds, dT.Milliseconds),"Вы выиграли!");
                         Thread.CurrentThread.Abort();
                     }
                     Thread.Sleep(10);

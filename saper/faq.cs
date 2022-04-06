@@ -18,8 +18,10 @@ namespace saper
         {
             InitializeComponent();
             this.Text = "Справка";
-            this.MaximumSize = new Size(450, 350);
+            this.MaximumSize = new Size(450, 460);
+            this.MaximizeBox = false;
             this.MinimumSize = this.MinimumSize;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
         }
 
         private void faq_Load(object sender, EventArgs e)

@@ -29,8 +29,9 @@ namespace saper
         private void Level_Load(object sender, EventArgs e)
         {
             this.Size = new Size(250, 200);
-            this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
             this.Text = "Настройки поля";
