@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,34 +11,45 @@ namespace saper
 {
     public partial class MainForm : Form
     {
+        //Стандартное значение параметров игрового поля
         public const int DEFAULT_SIZE = 20;
         public const int DEFAULT_BOMB_COUNT = 20;
-        private int clickCount = 0;
 
-        private Panel pole;
         private int poleSize = 600;
-        private int flagCount;
 
+        //Элементы управления формы, которые обновляются при запуске новой игры
         private PictureBox emojiImage;
         private Label flagCountInfo;
         private Label timer;
+        private Panel pole;
 
+        //Параметры игрового поля
+        private int bombCout = DEFAULT_BOMB_COUNT;
+        private int size = DEFAULT_SIZE;
+
+        //Методы для получения и установки параметров игрового поля
+        public int getBombCount() { return this.bombCout; }
+        public void setBombCount(int bc) { this.bombCout = bc; }
+        public int getSize() { return this.size; }
+        public void setSize(int s) { this.size = s; }
+
+        //Игровые значения, которые требуеться обновлять при запуске новой гры
+        private Cell[,] cells;
         private DateTime startTime = DateTime.Now;
-
-        public Cell[,] cells;
         private bool firstClick = true;
         private bool finishGame = false;
+        private int clickCount = 0;
+        private int flagCount;
 
-        public int bombCout = DEFAULT_BOMB_COUNT;
-        public int size = DEFAULT_SIZE;
-        public int getBombCOunt() { return this.bombCout; }
-        public int getSize() { return this.size; }
-
+        //Переменная котороя хранит в себе значение, которое обозначает открыта ли справка
         public bool faqIsOpen = false;
 
-        public Dispatcher current = Dispatcher.CurrentDispatcher;
-        Thread timerThread = null;
-        Thread checkerThread = null;
+        //Служба управления очердеди рабочих элементов для потока, в котором работает форма
+        private Dispatcher current = Dispatcher.CurrentDispatcher;
+
+        //Переменные обознацающие потоки, в которых работает таймер и проверка разминирования
+        private Thread timerThread = null;
+        private Thread checkerThread = null;
         public MainForm()
         {
             InitializeComponent();
@@ -72,12 +80,15 @@ namespace saper
                 Location = new Point(280, 35)
             };
             this.Controls.Add(emojiImage);
+
+
             flagCountInfo = new Label() {
                 AutoSize = true,
                 Location = new Point(55, 40),
                 Font = new Font(FontFamily.GenericMonospace,28,FontStyle.Bold)
             };
             this.Controls.Add(flagCountInfo);
+
             timer = new Label()
             {
                 AutoSize = true,
@@ -88,9 +99,9 @@ namespace saper
             this.Controls.Add(timer);
 
             MenuStrip menu = new MenuStrip();
-            ToolStripMenuItem restartButton = new ToolStripMenuItem("Настройки игры");
-            restartButton.Click += new EventHandler(restart);
-            menu.Items.Add(restartButton);
+            ToolStripMenuItem settingsButton = new ToolStripMenuItem("Настройки игры");
+            settingsButton.Click += new EventHandler(settingsButtonClick);
+            menu.Items.Add(settingsButton);
             ToolStripMenuItem faq = new ToolStripMenuItem("Справка");
             faq.Click += (obj, eargs) => {
                 if (faqIsOpen) return;
@@ -105,11 +116,13 @@ namespace saper
             init();
         }
 
-        private void restart(object sender, EventArgs args)
+        //Обработчик события клика по кнопке настройки
+        private void settingsButtonClick(object sender, EventArgs args)
         {
             openSettings();
         }
 
+        //Метод, открывающий окно настроек
         private void openSettings()
         {
             Level level = new Level(this);
@@ -121,6 +134,7 @@ namespace saper
             };
         }
 
+        //Сброс всех игровых значений, создание нового поля, с указаными настройками
         public void init()
         {
             clickCount = 0;
@@ -136,15 +150,19 @@ namespace saper
             updateFlagCountInfo(flagCount);
             pole.Controls.Clear();
             cells = new Cell[size, size];
+            this.Update();
+            List<Button> listOfCreatedButton = new List<Button>();
             for (int i = 0; i < size; i++)
                 for (int j = 0; j < size; j++)
                 {
                     cells[i, j] = new Cell(new int[] { i, j });
-                    genCell(i, j, cells[i, j]);
+                    listOfCreatedButton.Add(genCell(i, j, cells[i, j]));
                 }
+            pole.Controls.AddRange(listOfCreatedButton.ToArray());
         }
 
-        private void genCell(int x, int y, Cell tag)
+        //Метод создания новой кнопки-клетки
+        private Button genCell(int x, int y, Cell tag)
         {
             int allSize = poleSize / size;
             int ost = Math.Min(poleSize % size, 2);
@@ -164,9 +182,10 @@ namespace saper
                 b.BackColor = ((Cell)b.Tag).getColor();
                 if (((Cell)b.Tag).isNum()) b.Text = ((Cell)b.Tag).getType().ToString();
             });
-            pole.Controls.Add(b);
+            return b;
         }
 
+        //Обработчик клика по кнопке-клетки
         private void click(object sender, MouseEventArgs args)
         {
             if (finishGame) return;
@@ -177,7 +196,7 @@ namespace saper
                     {
                         generateBomb(cell.getX(),cell.getY());
                         firstClick = false;
-                        checker();
+                        startUtilThread();
                     }
                     if (args.Button.Equals(MouseButtons.Left))
                     {
@@ -204,10 +223,13 @@ namespace saper
                 }
         }
 
-        private void generateBomb(int nX, int nY)
+        //Алгоритм генерации бомб на поле
+        //Заготовка для работы с сидом
+        private void generateBomb(int nX, int nY, bool needSeed = false, int seed = int.MinValue)
         {
             int count = 0;
-            Random rnd = new Random();
+            if (!needSeed) seed = (int)(DateTime.Now.Ticks & 0xFFFFFFF);
+            Random rnd = new Random(seed);
             while (count < bombCout)
             {
                 int x = rnd.Next(size);
@@ -222,13 +244,35 @@ namespace saper
             }
         }
 
-        private void setNear(int x, int y)
+        public static int seedReader(string seed, out int seedSize, out int cpx, out int cpy)
         {
-            try { Cell c = cells[x, y]; }
-            catch { return; }
-            cells[x, y].updateType();
+            int rndSeed = (int)(DateTime.Now.Ticks & 0xFFFFFFF);
+            seedSize = 33 - seed[0];
+            cpx = 33 - seed[1];
+            cpy = 33 - seed[2];
+            if (Int32.TryParse(seed.Remove(0, 3), out int seedIntPart)) rndSeed = seedIntPart;
+            return rndSeed;
         }
 
+        public static string seedPreparer(int seedSize,  int cpx, int cpy, int seedIntPart)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append((char)(33+seedSize));
+            sb.Append((char)(33+cpx));
+            sb.Append((char)(33+cpy));
+            sb.Append(seedIntPart);
+            return sb.ToString();
+        }
+
+        //Обновление типа клетки, если она имеется
+        private void setNear(int x, int y)
+        {
+            if (x >= size || x < 0) return;
+            if (y >= size || y < 0) return;
+            cells[x, y].updateTypeToNumOrNextNum();
+        }
+
+        //Проверка возможности поведения аккорд, для клетки
         private bool canDoAcrod(Cell cell)
         {
             if (!cell.isNum() || !cell.isOpened()) return false;
@@ -249,6 +293,7 @@ namespace saper
             return flagCountNear == 0;
         }
 
+        //Открытие аккордом
         private void openAcord(Cell cell)
         {
             for(int i = -1; i < 2; i++)
@@ -276,9 +321,11 @@ namespace saper
             }
         }
 
+        //Метод, реализующий алгоритм открытия соседних клеток
         private void openNear(Cell cell, int x = 0, int y = 0)
         {
-            Task task = new Task(() =>
+            TaskFactory taskFactory = new TaskFactory();
+            taskFactory.StartNew(() =>
             {
                 if (cell.getX() + x >= size || cell.getY() + y >= size || cell.getX() + x < 0 || cell.getY() + y < 0) return;
                 if (cells[cell.getX() + x, cell.getY() + y].isOpened()) return;
@@ -298,10 +345,12 @@ namespace saper
                         openNear(cells[cell.getX() + x, cell.getY() + y], i, j);
                     }
                 }
+                return;
             });
-            task.Start();
+            
         }
 
+        //Открытие всех бомб
         private void openAllBomb()
         {
             current.Invoke(() =>
@@ -319,7 +368,8 @@ namespace saper
             });
         }
 
-        private void checker()
+        //Запуск утилитарных потоков
+        private void startUtilThread()
         {
             checkerThread = new Thread(new ThreadStart(()=> {
                 while (!finishGame)
@@ -328,7 +378,7 @@ namespace saper
                     foreach(Cell cell in cells)
                     {
                         if (!cell.isBomb()) allOp &= cell.isOpened();
-                        else allOp &= cell.getFlag();
+                        //else allOp &= cell.getFlag();
                         if (!allOp) break;
                     }
                     if (allOp) {
@@ -339,7 +389,7 @@ namespace saper
                             "\nНа это вам понадобилось {1}m:{2}s:{3}ms", clickCount, dT.Minutes, dT.Seconds, dT.Milliseconds),"Вы выиграли!");
                         Thread.CurrentThread.Abort();
                     }
-                    Thread.Sleep(10);
+                    Thread.Sleep(20);
                 }
                 Thread.CurrentThread.Abort();
             }));
@@ -354,13 +404,12 @@ namespace saper
                     TimeSpan dT = DateTime.Now - startTime;
                     current.Invoke(()=> { timer.Text = String.Format("{0:00}:{1:00}",dT.Minutes,dT.Seconds); });
                 }
-                Console.WriteLine("Finish");
-                current.Invoke(() =>{timer.Text = "00:00"; });
                 Thread.CurrentThread.Abort();
             }));
             timerThread.Start();
         }
 
+        //Обновление текста лейблов
         public void updateFlagCountInfo(int count)
         {
             flagCountInfo.Text = count.ToString();

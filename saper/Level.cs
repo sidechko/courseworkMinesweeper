@@ -59,7 +59,7 @@ namespace saper
             };
             bombCount = new TextBox()
             {
-                Text = owner.getBombCOunt().ToString(),
+                Text = owner.getBombCount().ToString(),
                 Location = new Point(110,66),
                 Size = new Size(100,20)
             };
@@ -113,8 +113,8 @@ namespace saper
             if (!Int32.TryParse(bombCount.Text, out bombCountOut)) bombCountOut = MainForm.DEFAULT_BOMB_COUNT;
             if (sizeOut < 9) sizeOut = 9;
             if (bombCountOut < 0 || bombCountOut > sizeOut * sizeOut) bombCountOut = rnd.Next(MainForm.DEFAULT_BOMB_COUNT, sizeOut * sizeOut / 5);
-            owner.size = sizeOut;
-            owner.bombCout = bombCountOut;
+            owner.setSize(sizeOut);
+            owner.setBombCount(bombCountOut);
             changeSizeAndBombCount();
         }
     }

@@ -69,7 +69,7 @@ namespace saper
             this.type = t;
         }
 
-        public void updateType()
+        public void updateTypeToNumOrNextNum()
         {
             if (this.type == 'b') return;
             if (this.type == 'n') {
