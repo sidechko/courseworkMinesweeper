@@ -33,3 +33,15 @@ C:\Users\User\Desktop\КУРСАЧ\saper\saper\bin\Release\MinesweeperCW.exe
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\bin\Release\MinesweeperCW.pdb
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\MinesweeperCW.exe
 C:\Users\User\Desktop\КУРСАЧ\saper\saper\obj\Release\MinesweeperCW.pdb
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\bin\Release\MinesweeperCW.exe.config
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\bin\Release\MinesweeperCW.exe
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\bin\Release\MinesweeperCW.pdb
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\obj\Release\saper.csproj.AssemblyReference.cache
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\obj\Release\saper.FAQ.resources
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\obj\Release\saper.MainForm.resources
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\obj\Release\saper.Level.resources
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\obj\Release\saper.Properties.Resources.resources
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\obj\Release\saper.csproj.GenerateResource.cache
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\obj\Release\saper.csproj.CoreCompileInputs.cache
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\obj\Release\MinesweeperCW.exe
+C:\Users\user.COM302-3\Documents\330\courseworkMinesweeper\saper\obj\Release\MinesweeperCW.pdb
